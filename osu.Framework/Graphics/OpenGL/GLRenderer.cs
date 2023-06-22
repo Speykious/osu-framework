@@ -207,18 +207,6 @@ namespace osu.Framework.Graphics.OpenGL
 
             switch (texture)
             {
-                case GLVideoTexture glVideo:
-                    if (glVideo.TextureIds == null)
-                        return false;
-
-                    for (int i = 0; i < glVideo.TextureIds.Length; i++)
-                    {
-                        GL.ActiveTexture(TextureUnit.Texture0 + unit + i);
-                        GL.BindTexture(TextureTarget.Texture2D, glVideo.TextureIds[i]);
-                    }
-
-                    break;
-
                 case GLTexture glTexture:
                     if (glTexture.TextureId <= 0)
                         return false;
@@ -454,8 +442,6 @@ namespace osu.Framework.Graphics.OpenGL
 
             return new GLTexture(this, width, height, manualMipmaps, glFilteringMode, initialisationColour);
         }
-
-        protected override INativeTexture CreateNativeVideoTexture(int width, int height) => new GLVideoTexture(this, width, height);
 
         protected override IVertexBatch<TVertex> CreateLinearBatch<TVertex>(int size, int maxBuffers, PrimitiveTopology topology)
             => new GLLinearBatch<TVertex>(this, size, maxBuffers, GLUtils.ToPrimitiveType(topology));

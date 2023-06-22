@@ -53,8 +53,6 @@ namespace osu.Framework.Platform
 
         protected override void SetupConfig(IDictionary<FrameworkSetting, object> defaultOverrides)
         {
-            defaultOverrides[FrameworkSetting.AudioDevice] = "No sound";
-
             base.SetupConfig(defaultOverrides);
 
             if (FrameworkEnvironment.StartupExecutionMode != null)

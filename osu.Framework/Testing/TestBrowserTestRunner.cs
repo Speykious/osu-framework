@@ -6,7 +6,6 @@
 using System;
 using System.Linq;
 using osu.Framework.Allocation;
-using osu.Framework.Bindables;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Logging;
@@ -18,9 +17,6 @@ namespace osu.Framework.Testing
     {
         private const double time_between_tests = 200;
 
-        private Bindable<double> volume;
-        private double volumeAtStartup;
-
         public TestBrowserTestRunner(TestBrowser browser)
         {
             this.browser = browser;
@@ -29,14 +25,10 @@ namespace osu.Framework.Testing
         [BackgroundDependencyLoader]
         private void load(FrameworkConfigManager config)
         {
-            volume = config.GetBindable<double>(FrameworkSetting.VolumeUniversal);
-            volumeAtStartup = volume.Value;
-            volume.Value = 0;
         }
 
         protected override void Dispose(bool isDisposing)
         {
-            volume.Value = volumeAtStartup;
             base.Dispose(isDisposing);
         }
 

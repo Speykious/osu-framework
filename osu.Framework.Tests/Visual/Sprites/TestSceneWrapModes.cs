@@ -4,7 +4,6 @@
 #nullable disable
 
 using System;
-using System.IO;
 using NUnit.Framework;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
@@ -29,7 +28,6 @@ namespace osu.Framework.Tests.Visual.Sprites
         }
 
         private readonly Texture[] textures = new Texture[4 * 4];
-        private byte[] videoData;
 
         [BackgroundDependencyLoader]
         private void load(TextureStore textureStore, Game game)
@@ -39,8 +37,6 @@ namespace osu.Framework.Tests.Visual.Sprites
                 for (int j = 0; j < 4; ++j)
                     textures[i * 4 + j] = textureStore.Get(@"sample-texture", wrapModes[i], wrapModes[j]);
             }
-
-            videoData = game.Resources.Get("Videos/sample-video.mp4");
         }
 
         [Test]
@@ -56,9 +52,6 @@ namespace osu.Framework.Tests.Visual.Sprites
             Texture = tex,
             TextureRectangle = new RectangleF(0.25f, 0.25f, 0.5f, 0.5f),
         });
-
-        [Test, Ignore("not implemented yet")]
-        public void TestVideos() => createTest(_ => new TestVideo(new MemoryStream(videoData)));
 
         private void createTest(Func<Texture, Drawable> creatorFunc) => AddStep("create test", () =>
         {

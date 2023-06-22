@@ -40,7 +40,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Graphics.Veldrid;
-using osu.Framework.Graphics.Video;
 using osu.Framework.IO.Serialization;
 using osu.Framework.IO.Stores;
 using osu.Framework.Localisation;
@@ -247,7 +246,6 @@ namespace osu.Framework.Platform
         public DrawThread DrawThread { get; private set; }
         public GameThread UpdateThread { get; private set; }
         public InputThread InputThread { get; private set; }
-        public AudioThread AudioThread { get; private set; }
 
         private double maximumUpdateHz = GameThread.DEFAULT_ACTIVE_HZ;
 
@@ -691,8 +689,6 @@ namespace osu.Framework.Platform
                 TaskScheduler.UnobservedTaskException += unobservedExceptionHandler;
 
                 RegisterThread(InputThread);
-
-                RegisterThread(AudioThread = new AudioThread());
 
                 RegisterThread(UpdateThread = new UpdateThread(UpdateFrame, DrawThread)
                 {
@@ -1437,14 +1433,6 @@ namespace osu.Framework.Platform
         /// <returns>A texture loader store.</returns>
         public virtual IResourceStore<TextureUpload> CreateTextureLoaderStore(IResourceStore<byte[]> underlyingStore)
             => new TextureLoaderStore(underlyingStore);
-
-        /// <summary>
-        /// Create a <see cref="VideoDecoder"/> with the given stream. May be overridden by platforms that require a different
-        /// decoder implementation.
-        /// </summary>
-        /// <param name="stream">The <see cref="Stream"/> to decode.</param>
-        /// <returns>An instance of <see cref="VideoDecoder"/> initialised with the given stream.</returns>
-        public virtual VideoDecoder CreateVideoDecoder(Stream stream) => new VideoDecoder(Renderer, stream);
 
         /// <summary>
         /// Creates the <see cref="ThreadRunner"/> to run the threads of this <see cref="GameHost"/>.

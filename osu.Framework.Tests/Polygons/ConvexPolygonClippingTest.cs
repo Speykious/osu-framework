@@ -49,14 +49,14 @@ namespace osu.Framework.Tests.Polygons
             var poly1 = new SimpleConvexPolygon(polygonVertices1);
             var poly2 = new SimpleConvexPolygon(polygonVertices2);
 
-            Assert.That(clip(poly1, poly2).Length, Is.Zero);
-            Assert.That(clip(poly2, poly1).Length, Is.Zero);
+            Assert.That(clip(ref poly1, ref poly2).Length, Is.Zero);
+            Assert.That(clip(ref poly2, ref poly1).Length, Is.Zero);
 
             Array.Reverse(polygonVertices1);
             Array.Reverse(polygonVertices2);
 
-            Assert.That(clip(poly1, poly2).Length, Is.Zero);
-            Assert.That(clip(poly2, poly1).Length, Is.Zero);
+            Assert.That(clip(ref poly1, ref poly2).Length, Is.Zero);
+            Assert.That(clip(ref poly2, ref poly1).Length, Is.Zero);
         }
 
         private static object[] subjectFullyContainedTestCases => new object[]
@@ -89,12 +89,12 @@ namespace osu.Framework.Tests.Polygons
             var clipPolygon = new SimpleConvexPolygon(clipVertices);
             var subjectPolygon = new SimpleConvexPolygon(subjectVertices);
 
-            assertPolygonEquals(subjectPolygon, new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), false);
+            assertPolygonEquals(subjectPolygon, new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), false);
 
             Array.Reverse(clipVertices);
             Array.Reverse(subjectVertices);
 
-            assertPolygonEquals(subjectPolygon, new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), true);
+            assertPolygonEquals(subjectPolygon, new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), true);
         }
 
         [TestCaseSource(nameof(subjectFullyContainedTestCases))]
@@ -103,12 +103,12 @@ namespace osu.Framework.Tests.Polygons
             var clipPolygon = new SimpleConvexPolygon(clipVertices);
             var subjectPolygon = new SimpleConvexPolygon(subjectVertices);
 
-            assertPolygonEquals(clipPolygon, new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), false);
+            assertPolygonEquals(clipPolygon, new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), false);
 
             Array.Reverse(clipVertices);
             Array.Reverse(subjectVertices);
 
-            assertPolygonEquals(clipPolygon, new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), true);
+            assertPolygonEquals(clipPolygon, new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), true);
         }
 
         private static object[] generalClippingTestCases => new object[]
@@ -184,40 +184,48 @@ namespace osu.Framework.Tests.Polygons
             var clipPolygon = new SimpleConvexPolygon(clipVertices);
             var subjectPolygon = new SimpleConvexPolygon(subjectVertices);
 
-            assertPolygonEquals(new SimpleConvexPolygon(resultingVertices), new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), false);
+            assertPolygonEquals(new SimpleConvexPolygon(resultingVertices), new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), false);
 
             Array.Reverse(clipVertices);
             Array.Reverse(subjectVertices);
 
             // The expected polygon is never reversed
-            assertPolygonEquals(new SimpleConvexPolygon(resultingVertices), new SimpleConvexPolygon(clip(clipPolygon, subjectPolygon).ToArray()), false);
+            assertPolygonEquals(new SimpleConvexPolygon(resultingVertices), new SimpleConvexPolygon(clip(ref clipPolygon, ref subjectPolygon).ToArray()), false);
         }
 
         [Test]
         public void TestTriangleClipping()
         {
+            Quad quad1 = new Quad(Vector2.Zero, Vector2.Zero, new Vector2(1, 0), new Vector2(0, 1));
+            Quad quad2 = new Quad(0, 0, 10, 10);
             assertPolygonEquals(new SimpleConvexPolygon(new[] { Vector2.Zero, new Vector2(0, 1), new Vector2(1, 0) }),
-                new SimpleConvexPolygon(clip(new Quad(Vector2.Zero, Vector2.Zero, new Vector2(1, 0), new Vector2(0, 1)), new Quad(0, 0, 10, 10)).ToArray()),
+                new SimpleConvexPolygon(clip(ref quad1, ref quad2).ToArray()),
                 false);
         }
 
         [Test]
         public void TestLineClipping()
         {
+            Quad quad1 = new Quad(25, 25, 0, 10);
+            Quad quad2 = new Quad(25, 25, 10, 0);
+            Quad quad3 = new Quad(0, 0, 100, 100);
+
             assertPolygonEquals(new SimpleConvexPolygon(Array.Empty<Vector2>()),
-                new SimpleConvexPolygon(clip(new Quad(25, 25, 0, 10), new Quad(0, 0, 100, 100)).ToArray()),
+                new SimpleConvexPolygon(clip(ref quad1, ref quad3).ToArray()),
                 false);
 
             assertPolygonEquals(new SimpleConvexPolygon(Array.Empty<Vector2>()),
-                new SimpleConvexPolygon(clip(new Quad(25, 25, 10, 0), new Quad(0, 0, 100, 100)).ToArray()),
+                new SimpleConvexPolygon(clip(ref quad2, ref quad3).ToArray()),
                 false);
         }
 
         [Test]
         public void TestPointClipping()
         {
+            Quad quad1 = new Quad(25, 25, 0, 0);
+            Quad quad2 = new Quad(0, 0, 100, 100);
             assertPolygonEquals(new SimpleConvexPolygon(Array.Empty<Vector2>()),
-                new SimpleConvexPolygon(clip(new Quad(25, 25, 0, 0), new Quad(0, 0, 100, 100)).ToArray()),
+                new SimpleConvexPolygon(clip(ref quad1, ref quad2).ToArray()),
                 false);
         }
 
@@ -225,10 +233,11 @@ namespace osu.Framework.Tests.Polygons
         public void TestEmptyClip()
         {
             var quad = new Quad(0, 0, 1, 1);
+            var poly = new SimpleConvexPolygon(Array.Empty<Vector2>());
 
             assertPolygonEquals(
                 new SimpleConvexPolygon(Array.Empty<Vector2>()),
-                new SimpleConvexPolygon(clip(new SimpleConvexPolygon(Array.Empty<Vector2>()), quad).ToArray()),
+                new SimpleConvexPolygon(clip(ref poly, ref quad).ToArray()),
                 false);
         }
 
@@ -236,10 +245,11 @@ namespace osu.Framework.Tests.Polygons
         public void TestEmptySubject()
         {
             var quad = new Quad(0, 0, 1, 1);
+            var poly = new SimpleConvexPolygon(Array.Empty<Vector2>());
 
             assertPolygonEquals(
                 new SimpleConvexPolygon(Array.Empty<Vector2>()),
-                new SimpleConvexPolygon(clip(quad, new SimpleConvexPolygon(Array.Empty<Vector2>())).ToArray()),
+                new SimpleConvexPolygon(clip(ref quad, ref poly).ToArray()),
                 false);
         }
 
@@ -298,13 +308,13 @@ namespace osu.Framework.Tests.Polygons
             var clipPolygon = new SimpleConvexPolygon(clipVertices);
             var subjectPolygon = new SimpleConvexPolygon(subjectVertices);
 
-            clip(clipPolygon, subjectPolygon);
+            clip(ref clipPolygon, ref subjectPolygon);
         }
 
-        private Span<Vector2> clip(SimpleConvexPolygon clipPolygon, SimpleConvexPolygon subjectPolygon)
+        private Span<Vector2> clip(ref SimpleConvexPolygon clipPolygon, ref SimpleConvexPolygon subjectPolygon)
             => new ConvexPolygonClipper<SimpleConvexPolygon, SimpleConvexPolygon>(ref clipPolygon, ref subjectPolygon).Clip();
 
-        private Span<Vector2> clip<TClip, TSubject>(TClip clipPolygon, TSubject subjectPolygon)
+        private Span<Vector2> clip<TClip, TSubject>(ref TClip clipPolygon, ref TSubject subjectPolygon)
             where TClip : IConvexPolygon
             where TSubject : IConvexPolygon
             => new ConvexPolygonClipper<TClip, TSubject>(ref clipPolygon, ref subjectPolygon).Clip();

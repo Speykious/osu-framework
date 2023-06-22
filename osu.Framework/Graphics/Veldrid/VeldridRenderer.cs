@@ -597,9 +597,6 @@ namespace osu.Framework.Graphics.Veldrid
                                                               Color4 initialisationColour = default)
             => new VeldridTexture(this, width, height, manualMipmaps, filteringMode.ToSamplerFilter(), initialisationColour);
 
-        protected override INativeTexture CreateNativeVideoTexture(int width, int height)
-            => new VeldridVideoTexture(this, width, height);
-
         internal IStagingBuffer<T> CreateStagingBuffer<T>(uint count)
             where T : unmanaged
         {

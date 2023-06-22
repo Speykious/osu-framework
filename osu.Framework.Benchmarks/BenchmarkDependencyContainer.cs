@@ -6,7 +6,6 @@ using BenchmarkDotNet.Attributes;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using osu.Framework.Allocation;
-using osu.Framework.Audio;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Textures;
@@ -57,7 +56,7 @@ namespace osu.Framework.Benchmarks
         {
             [UsedImplicitly] // params used implicitly
             [BackgroundDependencyLoader]
-            private void load(Game game, TextureStore textures, AudioManager audio)
+            private void load(Game game, TextureStore textures)
             {
             }
         }

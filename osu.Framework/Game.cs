@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using osu.Framework.Allocation;
-using osu.Framework.Audio;
 using osu.Framework.Bindables;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics;
@@ -15,7 +14,6 @@ using osu.Framework.Graphics.Performance;
 using osu.Framework.Graphics.Shaders;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Graphics.Visualisation;
-using osu.Framework.Graphics.Visualisation.Audio;
 using osu.Framework.Input;
 using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
@@ -48,8 +46,6 @@ namespace osu.Framework
         /// </summary>
         public IBindable<bool> IsActive => isActive;
 
-        public AudioManager Audio { get; private set; }
-
         public ShaderManager Shaders { get; private set; }
 
         /// <summary>
@@ -73,8 +69,6 @@ namespace osu.Framework
         private TextureVisualiser textureVisualiser;
 
         private LogOverlay logOverlay;
-
-        private AudioMixerVisualiser audioMixerVisualiser;
 
         protected override Container<Drawable> Content => content;
 
@@ -158,18 +152,6 @@ namespace osu.Framework
             var samples = new ResourceStore<byte[]>();
             samples.AddStore(new NamespacedResourceStore<byte[]>(Resources, @"Samples"));
             samples.AddStore(new OnlineStore());
-
-            Audio = new AudioManager(Host.AudioThread, tracks, samples) { EventScheduler = Scheduler };
-            dependencies.Cache(Audio);
-
-            dependencies.CacheAs(Audio.Tracks);
-            dependencies.CacheAs(Audio.Samples);
-
-            // attach our bindables to the audio subsystem.
-            config.BindWith(FrameworkSetting.AudioDevice, Audio.AudioDevice);
-            config.BindWith(FrameworkSetting.VolumeUniversal, Audio.Volume);
-            config.BindWith(FrameworkSetting.VolumeEffect, Audio.VolumeSample);
-            config.BindWith(FrameworkSetting.VolumeMusic, Audio.VolumeTrack);
 
             Shaders = new ShaderManager(Host.Renderer, new NamespacedResourceStore<byte[]>(Resources, @"Shaders"));
             dependencies.Cache(Shaders);
@@ -347,21 +329,6 @@ namespace osu.Framework
 
                     return true;
 
-                case FrameworkAction.ToggleAudioMixerVisualiser:
-                    if (audioMixerVisualiser == null)
-                    {
-                        LoadComponentAsync(audioMixerVisualiser = new AudioMixerVisualiser
-                        {
-                            State = { Value = Visibility.Visible },
-                            Position = getCascadeLocation(3),
-                            Depth = getNextFrontMostOverlayDepth(),
-                        }, overlayContent.Add);
-                    }
-                    else
-                        toggleOverlay(audioMixerVisualiser);
-
-                    return true;
-
                 case FrameworkAction.ToggleLogOverlay:
                     logOverlayVisibility.Value = !logOverlayVisibility.Value;
                     return true;
@@ -465,9 +432,6 @@ namespace osu.Framework
 
             // call a second time to protect against anything being potentially async disposed in the base.Dispose call.
             AsyncDisposalQueue.WaitForEmpty();
-
-            Audio?.Dispose();
-            Audio = null;
 
             Fonts?.Dispose();
             Fonts = null;

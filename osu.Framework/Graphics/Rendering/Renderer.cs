@@ -1089,18 +1089,8 @@ namespace osu.Framework.Graphics.Rendering
         protected abstract INativeTexture CreateNativeTexture(int width, int height, bool manualMipmaps = false, TextureFilteringMode filteringMode = TextureFilteringMode.Linear,
                                                               Color4 initialisationColour = default);
 
-        /// <summary>
-        /// Creates a new <see cref="INativeTexture"/> for video sprites.
-        /// </summary>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        /// <returns>The video <see cref="INativeTexture"/>.</returns>
-        protected abstract INativeTexture CreateNativeVideoTexture(int width, int height);
-
         public Texture CreateTexture(int width, int height, bool manualMipmaps, TextureFilteringMode filteringMode, WrapMode wrapModeS, WrapMode wrapModeT, Color4 initialisationColour)
             => CreateTexture(CreateNativeTexture(width, height, manualMipmaps, filteringMode, initialisationColour), wrapModeS, wrapModeT);
-
-        public Texture CreateVideoTexture(int width, int height) => CreateTexture(CreateNativeVideoTexture(width, height));
 
         /// <summary>
         /// Creates a new <see cref="Texture"/> based off an <see cref="INativeTexture"/>.

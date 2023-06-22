@@ -11,7 +11,6 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input;
 using osu.Framework.Input.Events;
-using osu.Framework.Input.Handlers.Tablet;
 using osu.Framework.Platform;
 using osuTK;
 using osuTK.Graphics;
@@ -54,11 +53,6 @@ namespace osu.Framework.Tests.Visual.Input
         protected override void LoadComplete()
         {
             base.LoadComplete();
-
-            var tabletHandler = host.AvailableInputHandlers.OfType<OpenTabletDriverHandler>().FirstOrDefault();
-
-            if (tabletHandler != null)
-                AddToggleStep("toggle tablet handling", t => tabletHandler.Enabled.Value = t);
         }
 
         private partial class PenButtonHandler : CompositeDrawable

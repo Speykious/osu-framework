@@ -31,34 +31,6 @@ namespace osu.Framework.Tests.Configuration
         }
 
         [Test]
-        public void TestSaveLoad()
-        {
-            const double test_volume = 0.65;
-
-            using (var storage = new TemporaryNativeStorage(Guid.NewGuid().ToString()))
-            {
-                using (var configManager = new FrameworkConfigManager(storage))
-                {
-                    var bindable = configManager.GetBindable<double>(FrameworkSetting.VolumeMusic);
-
-                    Assert.AreEqual(bindable.Default, bindable.Value);
-                    Assert.IsTrue(bindable.IsDefault);
-
-                    bindable.Value = test_volume;
-                    Assert.AreEqual(test_volume, bindable.Value);
-                }
-
-                using (var configManager = new FrameworkConfigManager(storage))
-                {
-                    var bindable = configManager.GetBindable<double>(FrameworkSetting.VolumeMusic);
-
-                    Assert.IsFalse(bindable.IsDefault);
-                    Assert.AreEqual(test_volume, bindable.Value);
-                }
-            }
-        }
-
-        [Test]
         public void TestDefaultOverrides()
         {
             const string test_locale = "override test";

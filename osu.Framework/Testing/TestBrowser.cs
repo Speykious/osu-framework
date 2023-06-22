@@ -12,7 +12,6 @@ using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using osu.Framework.Allocation;
-using osu.Framework.Audio;
 using osu.Framework.Bindables;
 using osu.Framework.Configuration;
 using osu.Framework.Development;
@@ -123,12 +122,10 @@ namespace osu.Framework.Testing
         private readonly BindableDouble audioRateAdjust = new BindableDouble(1);
 
         [BackgroundDependencyLoader]
-        private void load(Storage storage, GameHost host, AudioManager audio)
+        private void load(Storage storage, GameHost host)
         {
             interactive = host.Window != null;
             config = new TestBrowserConfig(storage);
-
-            audio.AddAdjustment(AdjustableProperty.Frequency, audioRateAdjust);
 
             var rateAdjustClock = new StopwatchClock(true);
             var framedClock = new FramedClock(rateAdjustClock);

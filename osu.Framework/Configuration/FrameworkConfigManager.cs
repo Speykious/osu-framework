@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using osu.Framework.Configuration.Tracking;
 using osu.Framework.Extensions;
-using osu.Framework.Graphics.Video;
 using osu.Framework.Input;
 using osu.Framework.Platform;
 using osuTK;
@@ -31,11 +30,6 @@ namespace osu.Framework.Configuration
             SetDefault(FrameworkSetting.WindowedPositionX, 0.5, -0.5, 1.5);
             SetDefault(FrameworkSetting.WindowedPositionY, 0.5, -0.5, 1.5);
             SetDefault(FrameworkSetting.LastDisplayDevice, DisplayIndex.Default);
-            SetDefault(FrameworkSetting.AudioDevice, string.Empty);
-            SetDefault(FrameworkSetting.VolumeUniversal, 1.0, 0.0, 1.0, 0.01);
-            SetDefault(FrameworkSetting.VolumeMusic, 1.0, 0.0, 1.0, 0.01);
-            SetDefault(FrameworkSetting.VolumeEffect, 1.0, 0.0, 1.0, 0.01);
-            SetDefault(FrameworkSetting.HardwareVideoDecoder, HardwareVideoDecoder.Any);
             SetDefault(FrameworkSetting.SizeFullscreen, new Size(9999, 9999), new Size(320, 240));
             SetDefault(FrameworkSetting.FrameSync, FrameSync.Limit2x);
             SetDefault(FrameworkSetting.WindowMode, WindowMode.Windowed);
@@ -58,7 +52,6 @@ namespace osu.Framework.Configuration
         public override TrackedSettings CreateTrackedSettings() => new TrackedSettings
         {
             new TrackedSetting<FrameSync>(FrameworkSetting.FrameSync, v => new SettingDescription(v, "Frame Limiter", v.GetDescription(), "Ctrl+F7")),
-            new TrackedSetting<string>(FrameworkSetting.AudioDevice, v => new SettingDescription(v, "Audio Device", string.IsNullOrEmpty(v) ? "Default" : v, v)),
             new TrackedSetting<bool>(FrameworkSetting.ShowLogOverlay, v => new SettingDescription(v, "Debug Logs", v ? "visible" : "hidden", "Ctrl+F10")),
             new TrackedSetting<Size>(FrameworkSetting.WindowedSize, v => new SettingDescription(v, "Screen resolution", $"{v.Width}x{v.Height}")),
             new TrackedSetting<WindowMode>(FrameworkSetting.WindowMode, v => new SettingDescription(v, "Screen Mode", v.ToString(), "Alt+Enter")),
@@ -76,13 +69,6 @@ namespace osu.Framework.Configuration
     public enum FrameworkSetting
     {
         ShowLogOverlay,
-
-        AudioDevice,
-        VolumeUniversal,
-        VolumeEffect,
-        VolumeMusic,
-
-        HardwareVideoDecoder,
 
         WindowedSize,
         WindowedPositionX,

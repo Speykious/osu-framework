@@ -378,11 +378,6 @@ namespace osu.Framework.Graphics.Rendering
                               WrapMode wrapModeT = WrapMode.None, Color4 initialisationColour = default);
 
         /// <summary>
-        /// Creates a new video texture.
-        /// </summary>
-        Texture CreateVideoTexture(int width, int height);
-
-        /// <summary>
         /// Creates a new linear vertex batch, accepting vertices and drawing as a given primitive type.
         /// </summary>
         /// <param name="size">Number of quads.</param>
