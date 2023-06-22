@@ -1,9 +1,7 @@
 using System;
 using osu.Framework.Allocation;
-using osu.Framework.Audio.Sample;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Animations;
-using osu.Framework.Graphics.Audio;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Textures;
@@ -48,14 +46,12 @@ namespace FlappyDon.Game.Elements
         [Resolved]
         private TextureStore textures { get; set; }
 
-        private DrawableSample flapSound;
-
         private bool isIdle;
 
         private float currentVelocity;
 
         [BackgroundDependencyLoader]
-        private void load(ISampleStore samples)
+        private void load()
         {
             Anchor = Anchor.CentreLeft;
             Origin = Anchor.Centre;
@@ -72,7 +68,6 @@ namespace FlappyDon.Game.Elements
             animation.AddFrame(textures.Get("redbird-midflap"), 200.0f);
 
             AddInternal(animation);
-            AddInternal(flapSound = new DrawableSample(samples.Get("wing.ogg")));
 
             Size = animation.Size;
             Scale = new Vector2(0.45f);
@@ -126,7 +121,6 @@ namespace FlappyDon.Game.Elements
 
             currentVelocity = 70.0f;
             this.RotateTo(-45.0f).Then(350.0f).RotateTo(90.0f, 500.0f);
-            flapSound.Play();
         }
 
         protected override void Update()

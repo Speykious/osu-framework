@@ -2,7 +2,6 @@
 using FlappyDon.Game.Elements;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Audio;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input.Events;
 using osuTK;
@@ -31,12 +30,6 @@ namespace FlappyDon.Game
         // Score Counter
         private readonly ScoreCounter scoreCounter = new ScoreCounter();
 
-        // Sound effects
-        private DrawableSample scoreSound;
-        private DrawableSample punchSound;
-        private DrawableSample fallSound;
-        private DrawableSample whooshSound;
-
         // Game state
         private GameState state = GameState.Ready;
         private bool disableInput;
@@ -44,12 +37,6 @@ namespace FlappyDon.Game
         [BackgroundDependencyLoader]
         private void load()
         {
-            // Load the sound effects
-            Add(scoreSound = new DrawableSample(Audio.Samples.Get("point.ogg")));
-            Add(punchSound = new DrawableSample(Audio.Samples.Get("hit.ogg")));
-            Add(fallSound = new DrawableSample(Audio.Samples.Get("die.ogg")));
-            Add(whooshSound = new DrawableSample(Audio.Samples.Get("swoosh.ogg")));
-
             // Create and configure the background elements
             skyBackdrop = new Backdrop(() => new BackdropSprite(), 20000.0f);
             groundBackdrop = new Backdrop(() => new GroundSprite(), 2250.0f);
@@ -77,7 +64,6 @@ namespace FlappyDon.Game
             obstacles.ThresholdCrossed = _ =>
             {
                 scoreCounter.IncrementScore();
-                scoreSound.Play();
             };
 
             // Set the Y offset from the top that counts as the ground for the bird
@@ -195,9 +181,6 @@ namespace FlappyDon.Game
             // Reset score
             scoreCounter.Reset();
 
-            // Play reset noise
-            whooshSound.Play();
-
             // Flash screen to hide the UI/backdrop element transitions
             screenFlash.Flash(0.0, 700.0);
 
@@ -236,10 +219,6 @@ namespace FlappyDon.Game
             // at the peak of the flash
             screenFlash.Flash(fade_in_duration, 500.0);
             Scheduler.AddDelayed(() => gameOverSprite.Show(), fade_in_duration);
-
-            // Play the punch sound, and then the 'fall' sound slightly after
-            punchSound.Play();
-            Scheduler.AddDelayed(() => fallSound.Play(), 70.0);
 
             // Animate the bird falling down to the ground
             bird.FallDown();
