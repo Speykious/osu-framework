@@ -2,7 +2,7 @@
   <img width="500px" src="assets/o!f Logo Large FC.svg">
 </p>
 
-# osu!framework
+# osu!framework (NOBASS fork)
 
 [![Build status](https://github.com/ppy/osu-framework/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/ppy/osu-framework/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/release/ppy/osu-framework.svg)](https://github.com/ppy/osu-framework/releases/latest)
@@ -10,6 +10,8 @@
 [![dev chat](https://discordapp.com/api/guilds/188630481301012481/widget.png?style=shield)](https://discord.gg/ppy)
 
 A game framework written with [osu!](https://github.com/ppy/osu) in mind.
+
+> This is a fork of osu!framework intended for simple web-like GUI applications. There are no audio features (so no dependency on BASS), no video decoding (so no dependency on FFmpeg), and no input handling for MIDI, joysticks and tablets. (I might rollback everything except the removal of BASS in the future...)
 
 ## Developing a game using osu!framework
 
