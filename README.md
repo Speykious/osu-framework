@@ -27,9 +27,9 @@ This framework is intended to take steps beyond what you would normally expect f
 
 ## Requirements
 
-- A desktop platform with the [.NET 6.0 SDK](https://dotnet.microsoft.com/download).
+- A desktop platform with the [.NET 7.0 SDK](https://dotnet.microsoft.com/download).
 - When running on linux, please have a system-wide ffmpeg installation available to support video decoding.
-- When running on Windows 7 or 8.1, *[additional prerequisites](https://docs.microsoft.com/en-us/dotnet/core/install/windows?tabs=net60&pivots=os-windows#dependencies)** may be required to correctly run .NET 6 applications if your operating system is not up-to-date with the latest service packs.
+- When running on Windows 7 or 8.1, *[additional prerequisites](https://docs.microsoft.com/en-us/dotnet/core/install/windows?tabs=net60&pivots=os-windows#dependencies)** may be required to correctly run .NET 7 applications if your operating system is not up-to-date with the latest service packs.
 - When working with the codebase, we recommend using an IDE with intellisense and syntax highlighting, such as [Visual Studio 2019+](https://visualstudio.microsoft.com/vs/), [Jetbrains Rider](https://www.jetbrains.com/rider/), or [Visual Studio Code](https://code.visualstudio.com/) with the [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) and [C#](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp) plugin installed.
 
 ### Building
@@ -57,8 +57,6 @@ We love to reward quality contributions. If you have made a large contribution, 
 ## Licence
 
 This framework is licensed under the [MIT licence](https://opensource.org/licenses/MIT). Please see [the licence file](LICENCE) for more information. [tl;dr](https://tldrlegal.com/license/mit-license) you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.
-
-The BASS audio library (a dependency of this framework) is a commercial product. While it is free for non-commercial use, please ensure to [obtain a valid licence](http://www.un4seen.com/bass.html#license) if you plan on distributing any application using it commercially.
 
 ## Projects that use osu!framework
 
