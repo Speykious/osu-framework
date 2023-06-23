@@ -3,20 +3,6 @@
 
 #nullable disable
 
-using osuTK;
-using osuTK.Graphics;
-using osu.Framework.Allocation;
-using osu.Framework.Extensions.TypeExtensions;
-using osu.Framework.Graphics.Colour;
-using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Effects;
-using osu.Framework.Graphics.Primitives;
-using osu.Framework.Graphics.Transforms;
-using osu.Framework.Input;
-using osu.Framework.Logging;
-using osu.Framework.Statistics;
-using osu.Framework.Threading;
-using osu.Framework.Timing;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -25,14 +11,28 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Development;
 using osu.Framework.Extensions.EnumExtensions;
+using osu.Framework.Extensions.TypeExtensions;
+using osu.Framework.Graphics.Colour;
+using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Effects;
+using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Rendering;
+using osu.Framework.Graphics.Transforms;
+using osu.Framework.Input;
 using osu.Framework.Input.Events;
 using osu.Framework.Input.States;
 using osu.Framework.Layout;
+using osu.Framework.Logging;
+using osu.Framework.Statistics;
+using osu.Framework.Threading;
+using osu.Framework.Timing;
 using osu.Framework.Utils;
+using osuTK;
+using osuTK.Graphics;
 using osuTK.Input;
 using Container = osu.Framework.Graphics.Containers.Container;
 
@@ -1108,7 +1108,7 @@ namespace osu.Framework.Graphics
         /// <summary>
         /// The origin of this <see cref="Drawable"/> expressed in relative coordinates from the top-left corner of <see cref="DrawRectangle"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">If <see cref="Origin"/> is <see cref="osu.Framework.Graphics.Anchor.Custom"/>.</exception>
+        /// <exception cref="InvalidOperationException">If <see cref="Origin"/> is <see cref="Anchor.Custom"/>.</exception>
         public Vector2 RelativeOriginPosition
         {
             get
@@ -2630,7 +2630,7 @@ namespace osu.Framework.Graphics
         Colour = 1 << 3,
 
         /// <summary>
-        /// <see cref="Graphics.DrawNode.ApplyState"/> has to be invoked on all old draw nodes.
+        /// <see cref="DrawNode.ApplyState"/> has to be invoked on all old draw nodes.
         /// This <see cref="Invalidation"/> flag never propagates to children.
         /// </summary>
         DrawNode = 1 << 4,

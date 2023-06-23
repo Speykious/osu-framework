@@ -3,13 +3,13 @@
 
 #nullable disable
 
-using osu.Framework.Graphics.Textures;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using osu.Framework.Logging;
-using System.Collections.Concurrent;
 using JetBrains.Annotations;
 using osu.Framework.Graphics.Rendering;
+using osu.Framework.Graphics.Textures;
+using osu.Framework.Logging;
 using osu.Framework.Platform;
 using osu.Framework.Text;
 

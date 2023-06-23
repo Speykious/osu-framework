@@ -4,9 +4,9 @@
 #nullable disable
 
 using System;
+using osu.Framework.Graphics.Shapes;
 using osuTK;
 using osuTK.Graphics;
-using osu.Framework.Graphics.Shapes;
 
 namespace osu.Framework.Graphics.UserInterface
 {

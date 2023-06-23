@@ -301,9 +301,9 @@ namespace osu.Framework.Platform
             if (controllers.ContainsKey(instanceID))
                 return;
 
-            var joystick = SDL.SDL_JoystickOpen(which);
+            nint joystick = SDL.SDL_JoystickOpen(which);
 
-            var controller = IntPtr.Zero;
+            nint controller = IntPtr.Zero;
             if (SDL.SDL_IsGameController(which) == SDL.SDL_bool.SDL_TRUE)
                 controller = SDL.SDL_GameControllerOpen(which);
 
@@ -384,7 +384,7 @@ namespace osu.Framework.Platform
 
         private void handleMouseWheelEvent(SDL.SDL_MouseWheelEvent evtWheel)
         {
-            bool isPrecise(float f) => f % 1 != 0;
+            static bool isPrecise(float f) => f % 1 != 0;
 
             if (isPrecise(evtWheel.preciseX) || isPrecise(evtWheel.preciseY))
                 lastPreciseScroll = evtWheel.timestamp;

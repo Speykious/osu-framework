@@ -162,9 +162,7 @@ namespace osu.Framework.Allocation
             {
                 case PropertyInfo pi:
                 {
-                    var getMethod = pi.GetMethod;
-                    if (getMethod == null)
-                        throw new AccessModifierNotAllowedForCachedValueException(AccessModifier.None, pi);
+                    var getMethod = pi.GetMethod ?? throw new AccessModifierNotAllowedForCachedValueException(AccessModifier.None, pi);
 
                     if (getMethod.GetCustomAttribute<CompilerGeneratedAttribute>() == null)
                         throw new AccessModifierNotAllowedForCachedValueException(AccessModifier.None, pi);

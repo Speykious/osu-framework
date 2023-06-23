@@ -16,7 +16,7 @@ namespace osu.Framework.Graphics.Veldrid.Buffers
 {
     internal class VeldridFrameBuffer : IFrameBuffer
     {
-        public osu.Framework.Graphics.Textures.Texture Texture { get; }
+        public Graphics.Textures.Texture Texture { get; }
 
         public Framebuffer Framebuffer { get; private set; }
 

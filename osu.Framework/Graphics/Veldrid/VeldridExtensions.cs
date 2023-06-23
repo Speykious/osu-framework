@@ -405,7 +405,7 @@ namespace osu.Framework.Graphics.Veldrid
             Debug.Assert(device.BackendType == GraphicsBackend.Vulkan);
 
             var info = device.GetVulkanInfo();
-            var physicalDevice = info.PhysicalDevice;
+            nint physicalDevice = info.PhysicalDevice;
 
             uint instanceExtensionsCount = 0;
             var result = VulkanNative.vkEnumerateInstanceExtensionProperties((byte*)null, ref instanceExtensionsCount, IntPtr.Zero);

@@ -4,8 +4,8 @@
 #nullable disable
 
 using System;
-using osuTK;
 using osu.Framework.Graphics;
+using osuTK;
 
 namespace osu.Framework.Physics
 {

@@ -253,7 +253,7 @@ namespace osu.Framework.Platform.Windows
             smallIcon = iconGroup.CreateIcon(small_icon_size, small_icon_size);
             largeIcon = iconGroup.CreateIcon(large_icon_size, large_icon_size);
 
-            var windowHandle = WindowHandle;
+            nint windowHandle = WindowHandle;
 
             if (windowHandle == IntPtr.Zero || largeIcon == null || smallIcon == null)
                 base.SetIconFromGroup(iconGroup);

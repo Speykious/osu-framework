@@ -3,8 +3,8 @@
 
 #nullable disable
 
-using System.Runtime.CompilerServices;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using osu.Framework.Testing;
 
 // We publish our internal attributes to other sub-projects of the framework.

@@ -112,7 +112,7 @@ namespace osu.Framework.Platform.MacOS.Native
 
             fixed (char* ptrFirstChar = str)
             {
-                var handle = SendIntPtr(Class.Get("NSString"), Selector.Get("alloc"));
+                nint handle = SendIntPtr(Class.Get("NSString"), Selector.Get("alloc"));
                 return SendIntPtr(handle, Selector.Get("initWithCharacters:length:"), (IntPtr)ptrFirstChar, str.Length);
             }
         }
@@ -127,7 +127,7 @@ namespace osu.Framework.Platform.MacOS.Native
                 image.Save(stream, TiffFormat.Instance);
                 byte[] array = stream.ToArray();
 
-                var handle = SendIntPtr(Class.Get("NSImage"), Selector.Get("alloc"));
+                nint handle = SendIntPtr(Class.Get("NSImage"), Selector.Get("alloc"));
                 return SendIntPtr(handle, Selector.Get("initWithData:"), NSData.FromBytes(array));
             }
         }

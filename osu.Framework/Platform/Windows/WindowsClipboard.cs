@@ -72,7 +72,7 @@ namespace osu.Framework.Platform.Windows
         public override void SetText(string selectedText)
         {
             int bytes = (selectedText.Length + 1) * 2;
-            var source = Marshal.StringToHGlobalUni(selectedText);
+            nint source = Marshal.StringToHGlobalUni(selectedText);
 
             setClipboard(source, bytes, cf_unicodetext);
         }
@@ -119,11 +119,11 @@ namespace osu.Framework.Platform.Windows
                 EmptyClipboard();
 
                 // IMPORTANT: SetClipboardData requires memory that was acquired with GlobalAlloc using GMEM_MOVABLE.
-                var hGlobal = GlobalAlloc(ghnd, (UIntPtr)bytes);
+                nint hGlobal = GlobalAlloc(ghnd, (UIntPtr)bytes);
 
                 try
                 {
-                    var target = GlobalLock(hGlobal);
+                    nint target = GlobalLock(hGlobal);
                     if (target == IntPtr.Zero)
                         return false;
 

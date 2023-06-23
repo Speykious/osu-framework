@@ -3,25 +3,25 @@
 
 #nullable disable
 
-using osuTK.Graphics;
-using osuTK.Input;
-using osu.Framework.Allocation;
-using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Primitives;
-using osu.Framework.Graphics.Shapes;
-using osu.Framework.Graphics.Sprites;
-using osu.Framework.Graphics.Textures;
-using osu.Framework.Utils;
-using osu.Framework.Statistics;
-using osu.Framework.Threading;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using osu.Framework.Allocation;
+using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Rendering;
+using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Textures;
 using osu.Framework.Input.Events;
+using osu.Framework.Statistics;
+using osu.Framework.Threading;
+using osu.Framework.Utils;
 using osuTK;
+using osuTK.Graphics;
+using osuTK.Input;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 

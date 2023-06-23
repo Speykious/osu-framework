@@ -353,6 +353,11 @@ namespace osu.Framework.Graphics.Containers
                 ChangeInternalChildDepth(child, newDepth);
         }
 
+        public void FadeBorderColour(ColourInfo newColour, double duration = 0, Easing easing = Easing.None)
+        {
+            this.TransformTo(nameof(BorderColour), newColour, duration, easing);
+        }
+
         /// <summary>
         /// If enabled, only the portion of children that falls within this <see cref="Container"/>'s
         /// shape is drawn to the screen.

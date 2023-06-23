@@ -3,15 +3,15 @@
 
 #nullable disable
 
-using osu.Framework.Caching;
-using osu.Framework.Graphics.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
+using osu.Framework.Caching;
 using osu.Framework.Extensions.EnumExtensions;
 using osu.Framework.Extensions.IEnumerableExtensions;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Localisation;
 
 namespace osu.Framework.Graphics.Containers

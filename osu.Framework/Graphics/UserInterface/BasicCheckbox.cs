@@ -3,12 +3,12 @@
 
 #nullable disable
 
-using osuTK;
-using osuTK.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Localisation;
+using osuTK;
+using osuTK.Graphics;
 
 namespace osu.Framework.Graphics.UserInterface
 {

@@ -5,19 +5,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using osu.Framework.Configuration;
-using osuTK;
-using osuTK.Graphics;
-using osuTK.Platform;
-using osuTK.Input;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using JetBrains.Annotations;
 using osu.Framework.Bindables;
+using osu.Framework.Configuration;
 using osu.Framework.Extensions;
 using osu.Framework.Extensions.EnumExtensions;
 using osu.Framework.Threading;
+using osuTK;
+using osuTK.Graphics;
+using osuTK.Input;
+using osuTK.Platform;
 using RectangleF = osu.Framework.Graphics.Primitives.RectangleF;
 
 namespace osu.Framework.Platform

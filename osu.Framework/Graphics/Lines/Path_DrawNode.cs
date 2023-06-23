@@ -1,17 +1,17 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using osu.Framework.Graphics.Primitives;
-using osu.Framework.Graphics.Textures;
-using osuTK;
 using System;
 using System.Collections.Generic;
-using osuTK.Graphics;
+using System.Diagnostics;
 using osu.Framework.Graphics.Colour;
+using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Rendering.Vertices;
 using osu.Framework.Graphics.Shaders;
-using System.Diagnostics;
+using osu.Framework.Graphics.Textures;
+using osuTK;
+using osuTK.Graphics;
 
 namespace osu.Framework.Graphics.Lines
 {

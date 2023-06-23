@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SDL2;
 using osu.Framework.Input;
 using osu.Framework.Input.Handlers;
 using osu.Framework.Input.Handlers.Mouse;
+using SDL2;
 
 namespace osu.Framework.Platform.Linux
 {

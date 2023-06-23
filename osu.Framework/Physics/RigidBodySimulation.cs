@@ -3,10 +3,10 @@
 
 #nullable disable
 
-using osuTK;
-using osu.Framework.Graphics;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using osu.Framework.Graphics;
+using osuTK;
 
 namespace osu.Framework.Physics
 {

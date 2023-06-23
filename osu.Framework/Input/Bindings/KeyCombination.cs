@@ -266,7 +266,7 @@ namespace osu.Framework.Input.Bindings
                 return $"Tablet Pen {key - InputKey.FirstTabletPenButton + 1}";
 
             if (key >= InputKey.MidiA0)
-                return key.ToString().Substring("Midi".Length).Replace("Sharp", "#");
+                return key.ToString()["Midi".Length..].Replace("Sharp", "#");
 
             if (key >= InputKey.FirstJoystickHatRightButton)
                 return $"Joystick Hat {key - InputKey.FirstJoystickHatRightButton + 1} Right";

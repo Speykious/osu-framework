@@ -177,9 +177,9 @@ namespace osu.Framework.Input
 
             new KeyboardKeyInput(state?.Keyboard?.Keys, CurrentState.Keyboard.Keys).Apply(CurrentState, this);
 
-            var touchStateDifference = (state?.Touch ?? new TouchState()).EnumerateDifference(CurrentState.Touch);
-            new TouchInput(touchStateDifference.deactivated, false).Apply(CurrentState, this);
-            new TouchInput(touchStateDifference.activated, true).Apply(CurrentState, this);
+            var (deactivated, activated) = (state?.Touch ?? new TouchState()).EnumerateDifference(CurrentState.Touch);
+            new TouchInput(deactivated, false).Apply(CurrentState, this);
+            new TouchInput(activated, true).Apply(CurrentState, this);
 
             new JoystickButtonInput(state?.Joystick?.Buttons, CurrentState.Joystick.Buttons).Apply(CurrentState, this);
             new JoystickAxisInput(state?.Joystick?.GetAxes()).Apply(CurrentState, this);
