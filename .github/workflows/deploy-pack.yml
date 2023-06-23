@@ -49,10 +49,10 @@ jobs:
         id: artifactsPath
         run: echo "::set-output name=NUGET_ARTIFACTS::${{github.workspace}}\artifacts"
 
-      - name: Install .NET 7.0.x
+      - name: Install .NET 6.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Pack (Framework)
         run: dotnet pack -c Release osu.Framework /p:Version=${{needs.check-if-tag.outputs.version}} /p:GenerateDocumentationFile=true /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg -o ${{steps.artifactsPath.outputs.nuget_artifacts}}
@@ -80,10 +80,10 @@ jobs:
         id: artifactsPath
         run: echo "::set-output name=NUGET_ARTIFACTS::${{github.workspace}}/artifacts"
 
-      - name: Install .NET 7.0.x
+      - name: Install .NET 6.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Replace Project References
         run: osu.Framework.Templates/replace-references.sh ${{needs.check-if-tag.outputs.version}}
@@ -115,10 +115,10 @@ jobs:
         id: artifactsPath
         run: echo "::set-output name=NUGET_ARTIFACTS::${{github.workspace}}\artifacts"
 
-      - name: Install .NET 7.0.x
+      - name: Install .NET 6.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Restore .NET workloads
         run: dotnet workload install android
@@ -150,13 +150,13 @@ jobs:
         id: artifactsPath
         run: echo "::set-output name=NUGET_ARTIFACTS::${{github.workspace}}/artifacts"
 
-      - name: Install .NET 7.0.x
+      - name: Install .NET 6.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "6.0.x"
 
       - name: Restore .NET Workloads
-        # `dotnet workload restore` is bugged in .NET 7.0.101+ when restoring iOS projects,
+        # `dotnet workload restore` is bugged in .NET 6.0.101+ when restoring iOS projects,
         # see https://github.com/xamarin/xamarin-macios/issues/16400.
         run: dotnet workload install ios
 
