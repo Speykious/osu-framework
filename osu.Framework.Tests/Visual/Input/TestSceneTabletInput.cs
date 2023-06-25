@@ -3,7 +3,6 @@
 
 #nullable disable
 
-using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -50,14 +49,10 @@ namespace osu.Framework.Tests.Visual.Input
         [Resolved]
         private GameHost host { get; set; }
 
-        protected override void LoadComplete()
-        {
-            base.LoadComplete();
-        }
-
         private partial class PenButtonHandler : CompositeDrawable
         {
             private readonly TabletPenButton button;
+
             private readonly Drawable background;
 
             public PenButtonHandler(int buttonIndex)
