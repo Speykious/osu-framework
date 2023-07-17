@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using osu.Framework.Development;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Rendering;
@@ -18,6 +19,7 @@ using osu.Framework.Graphics.Veldrid.Buffers.Staging;
 using osu.Framework.Graphics.Veldrid.Shaders;
 using osu.Framework.Graphics.Veldrid.Textures;
 using osu.Framework.Platform;
+using osu.Framework.Logging;
 using osu.Framework.Statistics;
 using osuTK;
 using osuTK.Graphics;
@@ -53,6 +55,11 @@ namespace osu.Framework.Graphics.Veldrid
         public override bool IsUvOriginTopLeft => Device.IsUvOriginTopLeft;
         public override bool IsClipSpaceYInverted => Device.IsClipSpaceYInverted;
 
+        /// <summary>
+        /// Represents the <see cref="Renderer.FrameIndex"/> of the latest frame that has completed rendering by the GPU.
+        /// </summary>
+        public ulong LatestCompletedFrameIndex { get; private set; }
+
         public GraphicsDevice Device { get; private set; } = null!;
 
         public ResourceFactory Factory => Device.ResourceFactory;
@@ -60,8 +67,25 @@ namespace osu.Framework.Graphics.Veldrid
         public CommandList Commands { get; private set; } = null!;
         public CommandList BufferUpdateCommands { get; private set; } = null!;
 
+        public CommandList TextureUpdateCommands { get; private set; } = null!;
+
+        private bool beganTextureUpdateCommands;
+
+        /// <summary>
+        /// A list of fences which tracks in-flight frames for the purpose of knowing the last completed frame.
+        /// This is tracked for the purpose of exposing <see cref="LatestCompletedFrameIndex"/>.
+        /// </summary>
+        private readonly List<FrameCompletionFence> pendingFramesFences = new List<FrameCompletionFence>();
+
+        /// <summary>
+        /// We are using fences every frame. Construction can be expensive, so let's pool some.
+        /// </summary>
+        private readonly Queue<Fence> perFrameFencePool = new Queue<Fence>();
+
         public VeldridIndexData SharedLinearIndex { get; }
         public VeldridIndexData SharedQuadIndex { get; }
+
+        private readonly VeldridStagingTexturePool stagingTexturePool;
 
         private readonly HashSet<IVeldridUniformBuffer> uniformBufferResetList = new HashSet<IVeldridUniformBuffer>();
         private readonly Dictionary<int, VeldridTextureResources> boundTextureUnits = new Dictionary<int, VeldridTextureResources>();
@@ -82,6 +106,7 @@ namespace osu.Framework.Graphics.Veldrid
         {
             SharedLinearIndex = new VeldridIndexData(this);
             SharedQuadIndex = new VeldridIndexData(this);
+            stagingTexturePool = new VeldridStagingTexturePool(this);
         }
 
         protected override void Initialise(IGraphicsSurface graphicsSurface)
@@ -197,6 +222,7 @@ namespace osu.Framework.Graphics.Veldrid
 
             Commands = Factory.CreateCommandList();
             BufferUpdateCommands = Factory.CreateCommandList();
+            TextureUpdateCommands = Factory.CreateCommandList();
 
             pipeline.Outputs = Device.SwapchainFramebuffer.OutputDescription;
         }
@@ -205,6 +231,8 @@ namespace osu.Framework.Graphics.Veldrid
 
         protected internal override void BeginFrame(Vector2 windowSize)
         {
+            updateLastCompletedFrameIndex();
+
             if (windowSize != currentSize)
             {
                 Device.ResizeMainWindow((uint)windowSize.X, (uint)windowSize.Y);
@@ -215,21 +243,73 @@ namespace osu.Framework.Graphics.Veldrid
                 ubo.ResetCounters();
             uniformBufferResetList.Clear();
 
+            stagingTexturePool.NewFrame();
+
             Commands.Begin();
             BufferUpdateCommands.Begin();
 
             base.BeginFrame(windowSize);
         }
 
+        private void updateLastCompletedFrameIndex()
+        {
+            int? lastSignalledFenceIndex = null;
+
+            // We have a sequential list of all fences which are in flight.
+            // Frame usages are assumed to be sequential and linear.
+            //
+            // Iterate backwards to find the last signalled fence, which can be considered the last completed frame index.
+            for (int i = pendingFramesFences.Count - 1; i >= 0; i--)
+            {
+                var fence = pendingFramesFences[i];
+
+                if (!fence.Fence.Signaled)
+                {
+                    // this rule is broken on metal, if a new command buffer has been submitted while a previous fence wasn't signalled yet,
+                    // then the previous fence will be thrown away and will never be signalled. keep iterating regardless of signal on metal.
+                    if (graphicsSurface.Type != GraphicsSurfaceType.Metal)
+                        Debug.Assert(lastSignalledFenceIndex == null, "A non-signalled fence was detected before the latest signalled frame.");
+
+                    continue;
+                }
+
+                lastSignalledFenceIndex ??= i;
+
+                Device.ResetFence(fence.Fence);
+                perFrameFencePool.Enqueue(fence.Fence);
+            }
+
+            if (lastSignalledFenceIndex != null)
+            {
+                ulong frameIndex = pendingFramesFences[lastSignalledFenceIndex.Value].FrameIndex;
+
+                Debug.Assert(frameIndex > LatestCompletedFrameIndex);
+                LatestCompletedFrameIndex = frameIndex;
+
+                pendingFramesFences.RemoveRange(0, lastSignalledFenceIndex.Value + 1);
+            }
+
+            Debug.Assert(pendingFramesFences.Count < 16, "Completion frame fence leak detected");
+        }
+
         protected internal override void FinishFrame()
         {
             base.FinishFrame();
 
+            flushTextureUploadCommands();
+
             BufferUpdateCommands.End();
             Device.SubmitCommands(BufferUpdateCommands);
 
+            // This is returned via the end-of-lifetime tracking in `pendingFrameFences`.
+            // See `updateLastCompletedFrameIndex`.
+            if (!perFrameFencePool.TryDequeue(out Fence? fence))
+                fence = Factory.CreateFence(false);
+
             Commands.End();
-            Device.SubmitCommands(Commands);
+            Device.SubmitCommands(Commands, fence);
+
+            pendingFramesFences.Add(new FrameCompletionFence(fence, FrameIndex));
         }
 
         protected internal override void SwapBuffers() => Device.SwapBuffers();
@@ -292,7 +372,16 @@ namespace osu.Framework.Graphics.Veldrid
         public void UpdateTexture<T>(global::Veldrid.Texture texture, int x, int y, int width, int height, int level, ReadOnlySpan<T> data)
             where T : unmanaged
         {
-            Device.UpdateTexture(texture, data, (uint)x, (uint)y, 0, (uint)width, (uint)height, 1, (uint)level, 0);
+            ensureTextureUploadCommandsBegan();
+
+            // This code is doing the same as the simpler approach of:
+            //
+            // Device.UpdateTexture(texture, data, (uint)x, (uint)y, 0, (uint)width, (uint)height, 1, (uint)level, 0);
+            //
+            // Except we are using a staging texture pool to avoid the alloc overhead of each staging texture.
+            var staging = stagingTexturePool.Get(width, height, texture.Format);
+            Device.UpdateTexture(staging, data, 0, 0, 0, (uint)width, (uint)height, 1, (uint)level, 0);
+            TextureUpdateCommands.CopyTexture(staging, 0, 0, 0, 0, 0, texture, (uint)x, (uint)y, 0, (uint)level, 0, (uint)width, (uint)height, 1, 1);
         }
 
         /// <summary>
@@ -308,7 +397,7 @@ namespace osu.Framework.Graphics.Veldrid
         /// <param name="rowLengthInBytes">The number of bytes per row of the image to read from <paramref name="data"/>.</param>
         public void UpdateTexture(global::Veldrid.Texture texture, int x, int y, int width, int height, int level, IntPtr data, int rowLengthInBytes)
         {
-            using var staging = Factory.CreateTexture(TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, texture.Format, TextureUsage.Staging));
+            var staging = stagingTexturePool.Get(width, height, texture.Format);
 
             unsafe
             {
@@ -425,6 +514,13 @@ namespace osu.Framework.Graphics.Veldrid
 
         public void DrawVertices(PrimitiveTopology type, int indexStart, int indicesCount)
         {
+            // normally we would flush/submit all texture upload commands at the end of the frame, since no actual rendering by the GPU will happen until then,
+            // but turns out on macOS with non-apple GPU, this results in rendering corruption.
+            // flushing the texture upload commands here before a draw call fixes the corruption, and there's no explanation as to why that's the case,
+            // but there is nothing to be lost in flushing here except for a frame that contains many sprites with Texture.BypassTextureUploadQueue = true.
+            // until that appears to be problem, let's just flush here.
+            flushTextureUploadCommands();
+
             var veldridShader = (VeldridShader)Shader!;
 
             pipeline.PrimitiveTopology = type;
@@ -474,6 +570,26 @@ namespace osu.Framework.Graphics.Veldrid
             }
 
             Commands.DrawIndexed((uint)indicesCount, 1, (uint)indexStart, 0, 0);
+        }
+
+        private void ensureTextureUploadCommandsBegan()
+        {
+            if (beganTextureUpdateCommands)
+                return;
+
+            TextureUpdateCommands.Begin();
+            beganTextureUpdateCommands = true;
+        }
+
+        private void flushTextureUploadCommands()
+        {
+            if (!beganTextureUpdateCommands)
+                return;
+
+            TextureUpdateCommands.End();
+            Device.SubmitCommands(TextureUpdateCommands);
+
+            beganTextureUpdateCommands = false;
         }
 
         /// <summary>
@@ -545,7 +661,12 @@ namespace osu.Framework.Graphics.Veldrid
                     commands.CopyTexture(texture, staging);
                     commands.End();
                     Device.SubmitCommands(commands, fence);
-                    Device.WaitForFence(fence);
+
+                    if (!waitForFence(fence, 5000))
+                    {
+                        Logger.Log("Failed to capture swapchain framebuffer content within reasonable time.", level: LogLevel.Important);
+                        return new Image<Rgba32>((int)width, (int)height);
+                    }
 
                     var resource = Device.Map(staging, MapMode.Read);
                     var span = new Span<Bgra32>(resource.Data.ToPointer(), (int)(resource.SizeInBytes / Marshal.SizeOf<Bgra32>()));
@@ -567,6 +688,23 @@ namespace osu.Framework.Graphics.Veldrid
                     return image.CloneAs<Rgba32>();
                 }
             }
+        }
+
+        private bool waitForFence(Fence fence, int millisecondsTimeout)
+        {
+            // todo: Metal doesn't support WaitForFence due to lack of implementation and bugs with supporting MTLSharedEvent.notifyListener,
+            // until that is fixed in some way or another, poll on the signal state.
+            if (graphicsSurface.Type == GraphicsSurfaceType.Metal)
+            {
+                const int sleep_time = 10;
+
+                while (!fence.Signaled && (millisecondsTimeout -= sleep_time) > 0)
+                    Thread.Sleep(sleep_time);
+
+                return fence.Signaled;
+            }
+
+            return Device.WaitForFence(fence, (ulong)(millisecondsTimeout * 1_000_000));
         }
 
         protected override IShaderPart CreateShaderPart(IShaderStore store, string name, byte[]? rawData, ShaderPartType partType)
@@ -594,7 +732,7 @@ namespace osu.Framework.Graphics.Veldrid
             => new VeldridUniformBuffer<TData>(this);
 
         protected override INativeTexture CreateNativeTexture(int width, int height, bool manualMipmaps = false, TextureFilteringMode filteringMode = TextureFilteringMode.Linear,
-                                                              Color4 initialisationColour = default)
+                                                              Color4? initialisationColour = null)
             => new VeldridTexture(this, width, height, manualMipmaps, filteringMode.ToSamplerFilter(), initialisationColour);
 
         internal IStagingBuffer<T> CreateStagingBuffer<T>(uint count)
@@ -639,5 +777,7 @@ namespace osu.Framework.Graphics.Veldrid
         }
 
         public void BindTextureResource(VeldridTextureResources resource, int unit) => boundTextureUnits[unit] = resource;
+
+        private record struct FrameCompletionFence(Fence Fence, ulong FrameIndex);
     }
 }

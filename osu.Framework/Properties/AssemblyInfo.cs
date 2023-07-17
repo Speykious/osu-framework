@@ -1,10 +1,8 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-#nullable disable
-
-using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Reflection.Metadata;
 using osu.Framework.Testing;
 
 // We publish our internal attributes to other sub-projects of the framework.

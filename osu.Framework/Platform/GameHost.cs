@@ -172,8 +172,10 @@ namespace osu.Framework.Platform
         /// </summary>
         protected abstract IWindow CreateWindow(GraphicsSurfaceType preferredSurface);
 
-        [CanBeNull]
-        public virtual Clipboard GetClipboard() => null;
+        [Obsolete($"Resolve {nameof(Clipboard)} via DI.")] // can be removed 20231010
+        public Clipboard GetClipboard() => Dependencies.Get<Clipboard>();
+
+        protected abstract Clipboard CreateClipboard();
 
         protected virtual ReadableKeyCombinationProvider CreateReadableKeyCombinationProvider() => new ReadableKeyCombinationProvider();
 
@@ -495,6 +497,8 @@ namespace osu.Framework.Platform
             if (buffer == null)
                 return;
 
+            Debug.Assert(buffer.Object != null);
+
             try
             {
                 using (drawMonitor.BeginCollecting(PerformanceCollectionType.DrawReset))
@@ -730,6 +734,7 @@ namespace osu.Framework.Platform
 
                 Dependencies.CacheAs(readableKeyCombinationProvider = CreateReadableKeyCombinationProvider());
                 Dependencies.CacheAs(CreateTextInput());
+                Dependencies.CacheAs(CreateClipboard());
 
                 ExecutionState = ExecutionState.Running;
                 threadRunner.Start();
@@ -1383,6 +1388,9 @@ namespace osu.Framework.Platform
             new KeyBinding(new KeyCombination(InputKey.Control, InputKey.X), PlatformAction.Cut),
             new KeyBinding(new KeyCombination(InputKey.Control, InputKey.C), PlatformAction.Copy),
             new KeyBinding(new KeyCombination(InputKey.Control, InputKey.V), PlatformAction.Paste),
+            new KeyBinding(new KeyCombination(InputKey.Shift, InputKey.Delete), PlatformAction.Cut),
+            new KeyBinding(new KeyCombination(InputKey.Control, InputKey.Insert), PlatformAction.Copy),
+            new KeyBinding(new KeyCombination(InputKey.Shift, InputKey.Insert), PlatformAction.Paste),
             new KeyBinding(new KeyCombination(InputKey.Control, InputKey.A), PlatformAction.SelectAll),
             new KeyBinding(InputKey.Left, PlatformAction.MoveBackwardChar),
             new KeyBinding(InputKey.Right, PlatformAction.MoveForwardChar),

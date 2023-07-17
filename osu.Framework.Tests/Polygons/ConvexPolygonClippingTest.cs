@@ -1,7 +1,5 @@
-// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
-
-#nullable disable
 
 using System;
 using NUnit.Framework;
@@ -311,13 +309,13 @@ namespace osu.Framework.Tests.Polygons
             clip(ref clipPolygon, ref subjectPolygon);
         }
 
-        private Span<Vector2> clip(ref SimpleConvexPolygon clipPolygon, ref SimpleConvexPolygon subjectPolygon)
-            => new ConvexPolygonClipper<SimpleConvexPolygon, SimpleConvexPolygon>(ref clipPolygon, ref subjectPolygon).Clip();
+        private Span<Vector2> clip(SimpleConvexPolygon clipPolygon, SimpleConvexPolygon subjectPolygon)
+            => new ConvexPolygonClipper<SimpleConvexPolygon, SimpleConvexPolygon>(clipPolygon, subjectPolygon).Clip();
 
         private Span<Vector2> clip<TClip, TSubject>(ref TClip clipPolygon, ref TSubject subjectPolygon)
             where TClip : IConvexPolygon
             where TSubject : IConvexPolygon
-            => new ConvexPolygonClipper<TClip, TSubject>(ref clipPolygon, ref subjectPolygon).Clip();
+            => new ConvexPolygonClipper<TClip, TSubject>(clipPolygon, subjectPolygon).Clip();
 
         private void assertPolygonEquals(IPolygon expected, IPolygon actual, bool reverse)
             => Assert.That(Vector2Extensions.GetOrientation(actual.GetVertices()),

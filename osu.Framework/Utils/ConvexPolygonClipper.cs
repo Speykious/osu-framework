@@ -22,6 +22,12 @@ namespace osu.Framework.Utils
             this.subjectPolygon = subjectPolygon;
         }
 
+        public ConvexPolygonClipper(TClip clipPolygon, TSubject subjectPolygon)
+        {
+            this.clipPolygon = clipPolygon;
+            this.subjectPolygon = subjectPolygon;
+        }
+
         /// <summary>
         /// Determines the minimum buffer size required to clip the two polygons.
         /// </summary>
